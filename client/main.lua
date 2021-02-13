@@ -13,7 +13,6 @@ _menuGarage:Add(mainMenu)
 
 Citizen.CreateThread(function() -- Create BLips Garage Public
     for _,rowBlip in pairs(Config.Blips.GaragePublic) do 
-        print(rowBlip.pos.x)
         local blips = AddBlipForCoord(rowBlip.pos.x, rowBlip.pos.y, rowBlip.pos.z)
         SetBlipSprite(blips, rowBlip.Sprite)
         SetBlipDisplay(blips, rowBlip.Display)
@@ -63,7 +62,6 @@ function openMenu(isOpen)
                 for _, v in ipairs(dataCallback) do
                     dataVehicle = dataCallback
                 end
-                print("wait Create Menu")
                 CreateMenuGaragePublic(dataVehicle)
                 mainMenu:Visible(true)
             end)
@@ -78,14 +76,13 @@ end)
 function updateVehicleCar(vehicleProps,vehicle)
     local carName = GetLabelText(GetDisplayNameFromVehicleModel(vehicleProps.model))
     ESX.TriggerServerCallback('nrt_garage:updateVehicleGarage',function(cb)
-        print(cb)
+
         if cb == 1 then
             DeleteEntity(vehicle);
         end
     end, vehicleProps,vehicle,carName)
 end
 function spawnVehicleCar(vehicleProps, i)
-    print(#(vehicleProps))
     local spc = Config.GaragePublic.SpawnCar
     -- Delete Vehicle By Plate
     local vhTheWorld = ESX.Game.GetVehicles() -- Entity Vehicle
@@ -93,8 +90,6 @@ function spawnVehicleCar(vehicleProps, i)
         local vehicleWorldProps = ESX.Game.GetVehicleProperties(rowVehicleTheWorld)
         for _i, rowVehicleGarageProps in ipairs(vehicleProps) do
             if vehicleWorldProps.plate == rowVehicleGarageProps.plate then
-                print("compairs")
-                print(vehicleWorldProps.plate .. "===" .. rowVehicleGarageProps.plate)
                 ESX.Game.DeleteVehicle(rowVehicleTheWorld)
             end
         end
@@ -103,7 +98,6 @@ function spawnVehicleCar(vehicleProps, i)
         function(vehicleSpawn)
             ESX.Game.SetVehicleProperties(vehicleSpawn, vehicleProps[i])
             local vhProp = ESX.Game.GetVehicleProperties(vehicleSpawn)
-            print(vhProp.plate)
         end)
 end
 
@@ -128,8 +122,6 @@ function CreateMenuGaragePublic(vehicleProps)
     mainMenu.OnListSelect = function(sender, item, index)
         if item == listItemVehicle then
             local itemName = item:IndexToItem(index)
-            print(itemName)
-            print(index)
             spawnVehicleCar(vehicleProps, index)
         end
     end
