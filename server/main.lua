@@ -2,6 +2,14 @@ ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj)
     ESX = obj
 end)
+RegisterNetEvent('nrt_garage:compareVehicleprops')
+AddEventHandler('nrt_garage:compareVehicleprops', function(callback,vehicleProps_1,vehicle_2)
+    for _, rowVehicleProps in ipairs(vehicleProps_1) do 
+        for _i, _rowVehicleProps in ipairs(rowVehicleProps) do
+            print(_rowVehicleProps)
+        end
+    end
+end)
 ESX.RegisterServerCallback('nrt_garage:getVehicleData', function(source, callback)
     local dataVehicle = {}
     MySQL.Async.fetchAll("SELECT * FROM `owned_vehicles`", {}, function(res_Database)

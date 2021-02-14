@@ -2,14 +2,14 @@ Config = {}
 Config.GaragePublic = {
     DrawMarker = {
         Garage = {
-            tyeMarker = 1,
+            tyeMarker = 26,
             pos = {
                 x = 215.632,
                 y = -809.894,
-                z = 29.7
+                z = 29.9
             },
             color = {
-                r = 0,
+                r = 255,
                 g = 255,
                 b = 255,
                 a = 200
@@ -23,7 +23,7 @@ Config.GaragePublic = {
             ZoneName = "Garage"
         },
         SaveCarInGarage = {
-            tyeMarker = 36,
+            tyeMarker = 30,
             pos = {
                 x = 259.0,
                 y = -777.1,
