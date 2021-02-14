@@ -22,6 +22,27 @@ Config.GaragePublic = {
             Distance = 50.0,
             ZoneName = "Garage"
         },
+        SaveCarInGarage = {
+            tyeMarker = 36,
+            pos = {
+                x = 259.0,
+                y = -777.1,
+                z = 30.5
+            },
+            color = {
+                r = 125,
+                g = 125,
+                b = 255,
+                a = 140
+            },
+            scale = {
+                x = 2.5,
+                y = 2.5,
+                z = 2.5
+            },
+            Distance = 60.0,
+            ZoneName = "SaveCar"
+        },
     },
     SpawnCar = {
         pos = {
@@ -31,26 +52,7 @@ Config.GaragePublic = {
         },
         heading = 69.6
     },
-    SaveCarInGarage = {
-        tyeMarker = 36,
-        pos = {
-            x = 259.0,
-            y = -777.1,
-            z = 30.5
-        },
-        color = {
-            r = 125,
-            g = 125,
-            b = 255,
-            a = 140
-        },
-        scale = {
-            x = 2.5,
-            y = 2.5,
-            z = 2.5
-        },
-        Distance = 60.0
-    },
+    
 }
 
 Config.Blips = {

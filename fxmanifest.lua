@@ -16,7 +16,8 @@ client_scripts {
     '@es_extended/locale.lua',  
     "@NativeUILua_Reloaded/src/NativeUIReloaded.lua",
     'client/main.lua',
-    'config.lua'
+    'config.lua',
+    'functions.lua'
 }
 
 dependencies {
