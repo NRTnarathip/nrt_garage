@@ -3,7 +3,7 @@ game 'gta5'
 
 author 'NRTnarathip'
 description 'Garage Vehicle'
-version '1.0.0'
+version '0.1.0'
 
 server_scripts {
     '@es_extended/locale.lua',
