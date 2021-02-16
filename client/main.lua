@@ -9,6 +9,8 @@ _menuGarage = NativeUI.CreatePool()
 mainMenu = NativeUI.CreateMenu("Garage Public", 'Garage Public Beta')
 _menuGarage:Add(mainMenu)
 currentZone = nil
+listCarFromVehicleOwned = {}
+firstTimeOpenMenu = GetClockMinutes()
 Citizen.CreateThread(function() -- Create BLips Garage Public
     for _, rowBlip in pairs(Config.Blips.GaragePublic) do
         local blips = AddBlipForCoord(rowBlip.pos.x, rowBlip.pos.y,
@@ -20,8 +22,8 @@ Citizen.CreateThread(function() -- Create BLips Garage Public
         AddTextComponentString("Public Garage")
         SetBlipAsShortRange(blips, true)
         EndTextCommandSetBlipName(blips)
-    end
 
+    end
 end)
 Citizen.CreateThread(function()
     while true do
@@ -44,13 +46,10 @@ Citizen.CreateThread(function()
                             Draw3DText(v.pos.x,v.pos.y,v.pos.z,0.5,"Press [E] Save Car")
                             if IsControlJustPressed(1,38) then-- [E] Key
                                 local OnVehicle = GetVehiclePedIsIn(GetPlayerPed(-1), false)
-                                print(OnVehicle)
                                 if OnVehicle ~= 0 then
-                                    print("wait save car to garage public")
-                                    SaveCarToGarage()
+                                    SaveCarAtGarage()
                                 end
                             end
-                        -- elseif distance > 1.7 then
                         end
                     end
                 end
@@ -60,8 +59,5 @@ Citizen.CreateThread(function()
     end
 end)
 
-_menuGarage:MouseControlsEnabled(false)
-_menuGarage:MouseEdgeEnabled(false)
-_menuGarage:ControlDisablingEnabled(false)
-_menuGarage:RefreshIndex()
+
 

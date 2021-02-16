@@ -1,4 +1,5 @@
 function openMenu(isOpen)
+    
     local h_key = 86
     if isOpen == false then
         mainMenu:Visible(false)
@@ -6,20 +7,28 @@ function openMenu(isOpen)
         alert("Enter Garage ~INPUT_VEH_HORN~")
         _menuGarage:ProcessMenus()
         if IsControlJustPressed(1, h_key) and isOpen == true then
-            local dataVehicle = {}
-            ESX.TriggerServerCallback('nrt_garage:getVehicleGarage', function(dataCallback)
-                for _, v in ipairs(dataCallback) do
-                    dataVehicle = dataCallback
-                end
-                CreateMenuGaragePublic(dataVehicle)
-                mainMenu:Visible(true)
-            end)
+            if GetClockMinutes() - firstTimeOpenMenu >=1 then
+                firstTimeOpenMenu = GetClockMinutes()
+                CreateMenuGaragePublic()
+            end
         end
     end
 end
-function spawnVehicleCar(vehicleProps, i)
-    local spc = Config.GaragePublic.SpawnCar
-    -- Delete Vehicle By Plate
+function _tsl(str, ...)
+	if Locales[Config.Locale] ~= nil then
+		if Locales[Config.Locale][str] ~= nil then
+		  return string.format(Locales[Config.Locale][str], ...)
+		else
+		  return 'Translation [' .. Config.Locale .. '][' .. str .. '] does not exists'
+		end
+  	else
+    	return 'Locale [' .. Config.Locale .. '] does not exists'
+  	end
+end
+function sx(str, ...) -- Translate string first char uppercase
+  return tostring(_tsl(str, ...):gsub("^%l", string.upper))
+end
+function deleteVehicleInTheWorld(vehicleProps)
     local vhTheWorld = ESX.Game.GetVehicles() -- Entity Vehicle
     for _, rowVehicleTheWorld in ipairs(vhTheWorld) do
         local vehicleWorldProps = ESX.Game.GetVehicleProperties(rowVehicleTheWorld)
@@ -29,40 +38,92 @@ function spawnVehicleCar(vehicleProps, i)
             end
         end
     end
-    ESX.Game.SpawnVehicle(vehicleProps[i].model, vector3(spc.pos.x, spc.pos.y, spc.pos.z), spc.heading,
-        function(vehicleSpawn)
-            ESX.Game.SetVehicleProperties(vehicleSpawn, vehicleProps[i])
-            local vhProp = ESX.Game.GetVehicleProperties(vehicleSpawn)
-        end)
 end
-function CreateMenuGaragePublic(vehicleProps)
-    local listCar = {}
+function spawnVehicleCar(vehicleProps, i)
+    deleteVehicleInTheWorld(vehicleProps)
+    local spc = Config.GaragePublic.SpawnCar
+    -- check Obtacle location spawn
+    for _, rowSpawnCoordsX in ipairs(spc.pos.x) do
+        local vec3Coords = vector3(spc.pos.x[_],spc.pos.y[_],spc.pos.z[_])
+        local objVehicle = ESX.Game.GetVehiclesInArea(vec3Coords, 6.0)
+        local vhInArea = false
+        for _i,v in pairs(objVehicle) do
+            vhInArea = true
+        end
+        if vhInArea == false then
+            ESX.Game.SpawnVehicle(vehicleProps[i].model, vec3Coords, spc.heading,
+            function(vehicleSpawn)
+                ESX.Game.SetVehicleProperties(vehicleSpawn, vehicleProps[i])
+            end)
+            break
+        end
+    end
+end
+function TableIsEmty(tableArgs)
+	for _, v in ipairs(tableArgs) do
+    	return false
+    end
+    return true
+end
+function GetPropsVehicleDefualt(rowVehicleOwnedProps)
+    local vehiclePropsDefualt = {
+        ['model'] = rowVehicleOwnedProps.model,
+        ['plate'] = rowVehicleOwnedProps.plate,
+        ['color1'] = 3,
+        ['color2'] = 3
+    }
+    return vehiclePropsDefualt
+end
+function CreateMenuGaragePublic()
+    print('createMenu')
+    local dataVehicleProps = {}
+    local listCarMenu = {}
     _menuGarage = NativeUI.CreatePool()
     mainMenu = NativeUI.CreateMenu("Garage Public", 'Garage Public Beta')
     _menuGarage:Add(mainMenu)
-    for i, dataVehicle in ipairs(vehicleProps) do
-        local name = GetLabelText(GetDisplayNameFromVehicleModel(dataVehicle.model))
-        local plate = dataVehicle.plate
-        table.insert(listCar, string.format("Name:%s plate:%s", name, plate))
-    end
-    local listItemVehicle = NativeUI.CreateListItem("Car", listCar, 1)
-    mainMenu:AddItem(listItemVehicle)
-    mainMenu.OnListSelect = function(sender, item, index)
-        if item == listItemVehicle then
-            local itemName = item:IndexToItem(index)
-            spawnVehicleCar(vehicleProps, index)
+    ESX.TriggerServerCallback('nrt_garage:getVehicleGarage', function(callback) 
+        for k,v in ipairs(callback) do 
+            table.insert(dataVehicleProps,v)
         end
-    end
-    _menuGarage:MouseControlsEnabled(false)
-    _menuGarage:MouseEdgeEnabled(false)
-    _menuGarage:ControlDisablingEnabled(false)
-    _menuGarage:RefreshIndex()
+        if TableIsEmty(dataVehicleProps) == false then
+            for _, rowVehicleProps in ipairs(dataVehicleProps) do
+                local name = GetLabelText(GetDisplayNameFromVehicleModel(rowVehicleProps.model))
+                local plate = rowVehicleProps.plate
+                table.insert(listCarMenu, string.format("Name:%s plate:%s", name, plate))
+            end
+        else
+            table.insert(listCarMenu, 'Emty')
+        end
+        local listItemVehicle = NativeUI.CreateListItem("Car", listCarMenu, 1)
+        mainMenu:AddItem(listItemVehicle)
+        _menuGarage:MouseControlsEnabled(false)
+        _menuGarage:MouseEdgeEnabled(false)
+        _menuGarage:ControlDisablingEnabled(false)
+        _menuGarage:RefreshIndex()
+        mainMenu:Visible(not mainMenu:Visible())
+        local firstTimeClick = GetClockMinutes()
+        mainMenu.OnListSelect = function(sender, item, index)
+            if GetClockMinutes() - firstTimeClick >= 1 then
+                firstTimeClick = GetClockMinutes()
+                if item == listItemVehicle then
+                    local itemName = item:IndexToItem(index)
+                    if itemName == 'Emty' and itemName ~= 'nil' then
+                        notify(sx('car_emty'))
+                    else
+                        spawnVehicleCar(dataVehicleProps, index)
+                    end
+                end
+            else
+                print(GetClockMinutes() - firstTimeClick)
+            end
+        end
+    end)
 end
 
 RegisterCommand("savecar", function()
-    SaveCarToGarage()
+    SaveCarAtGarage()
 end)
-function SaveCarToGarage()
+function SaveCarAtGarage()
     local vehicle = GetVehiclePedIsUsing(GetPlayerPed(-1))
     local vehicleProps = ESX.Game.GetVehicleProperties(vehicle)
     SaveVehicleCar(vehicleProps,vehicle)
@@ -90,12 +151,18 @@ function Draw3DText(x, y, z, scl_factor, text)
         DrawText(_x, _y)
     end
 end
+function notify(string)
+    SetNotificationTextEntry("STRING")
+    AddTextComponentString(string)
+    DrawNotification(true, false)
+end
 function SaveVehicleCar(vehicleProps,vehicle)
     local carName = GetLabelText(GetDisplayNameFromVehicleModel(vehicleProps.model))
     ESX.TriggerServerCallback('nrt_garage:SaveCarVehicleGarage',function(cb)
-        print(cb)
-        if cb == 'updateVehicle' or 'createVehicle' then
+        if cb == 'updateVehicle' or cb == 'createVehicle' then
             DeleteEntity(vehicle);
+        elseif cb == 2 then
+        	notify(sx('cannot_save_vehicle_garage'))
         end
     end, vehicleProps,vehicle,carName)
 end

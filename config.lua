@@ -1,4 +1,7 @@
 Config = {}
+Config.Locale = 'en'
+Config.DBVehicleShop = 'owned_vehicles'
+Config.DBVehicleGarage = 'vehicle_garage'
 Config.GaragePublic = {
     DrawMarker = {
         Garage = {
@@ -46,15 +49,13 @@ Config.GaragePublic = {
     },
     SpawnCar = {
         pos = {
-            x = 221.7,
-            y = -804.0,
-            z = 30.0
+            x = {221.7, 225.85,232.02,235.68},
+            y = {-804.0, -794.07,-807.88,-797.69},
+            z = {30.0, 30.0,30.02,30.0}
         },
         heading = 69.6
-    },
-    
+    },   
 }
-
 Config.Blips = {
     GaragePublic ={
         Blips = {
