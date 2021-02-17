@@ -10,7 +10,6 @@ mainMenu = NativeUI.CreateMenu("Garage Public", 'Garage Public Beta')
 _menuGarage:Add(mainMenu)
 currentZone = nil
 listCarFromVehicleOwned = {}
-firstTimeOpenMenu = GetClockMinutes()
 Citizen.CreateThread(function() -- Create BLips Garage Public
     for _, rowBlip in pairs(Config.Blips.GaragePublic) do
         local blips = AddBlipForCoord(rowBlip.pos.x, rowBlip.pos.y,

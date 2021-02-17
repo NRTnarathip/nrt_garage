@@ -1,5 +1,4 @@
 function openMenu(isOpen)
-    
     local h_key = 86
     if isOpen == false then
         mainMenu:Visible(false)
@@ -7,10 +6,7 @@ function openMenu(isOpen)
         alert("Enter Garage ~INPUT_VEH_HORN~")
         _menuGarage:ProcessMenus()
         if IsControlJustPressed(1, h_key) and isOpen == true then
-            if GetClockMinutes() - firstTimeOpenMenu >=1 then
-                firstTimeOpenMenu = GetClockMinutes()
-                CreateMenuGaragePublic()
-            end
+            CreateMenuGaragePublic()
         end
     end
 end
@@ -65,6 +61,7 @@ function TableIsEmty(tableArgs)
     end
     return true
 end
+
 function GetPropsVehicleDefualt(rowVehicleOwnedProps)
     local vehiclePropsDefualt = {
         ['model'] = rowVehicleOwnedProps.model,
@@ -74,6 +71,7 @@ function GetPropsVehicleDefualt(rowVehicleOwnedProps)
     }
     return vehiclePropsDefualt
 end
+
 function CreateMenuGaragePublic()
     print('createMenu')
     local dataVehicleProps = {}
@@ -94,30 +92,25 @@ function CreateMenuGaragePublic()
         else
             table.insert(listCarMenu, 'Emty')
         end
-        local listItemVehicle = NativeUI.CreateListItem("Car", listCarMenu, 1)
-        mainMenu:AddItem(listItemVehicle)
-        _menuGarage:MouseControlsEnabled(false)
-        _menuGarage:MouseEdgeEnabled(false)
-        _menuGarage:ControlDisablingEnabled(false)
-        _menuGarage:RefreshIndex()
-        mainMenu:Visible(not mainMenu:Visible())
-        local firstTimeClick = GetClockMinutes()
-        mainMenu.OnListSelect = function(sender, item, index)
-            if GetClockMinutes() - firstTimeClick >= 1 then
-                firstTimeClick = GetClockMinutes()
-                if item == listItemVehicle then
-                    local itemName = item:IndexToItem(index)
-                    if itemName == 'Emty' and itemName ~= 'nil' then
-                        notify(sx('car_emty'))
-                    else
-                        spawnVehicleCar(dataVehicleProps, index)
-                    end
-                end
+    end)
+    local listItemVehicle = NativeUI.CreateListItem("Car", listCarMenu, 1)
+    mainMenu.OnListSelect = function(sender, item, index)
+        if item == listItemVehicle then
+            local itemName = item:IndexToItem(index)
+            if itemName == 'Emty' and itemName ~= 'nil' then
+                notify(sx('car_emty'))
             else
-                print(GetClockMinutes() - firstTimeClick)
+                spawnVehicleCar(dataVehicleProps, index)
             end
         end
-    end)
+    end
+    mainMenu:AddItem(listItemVehicle)
+    _menuGarage:MouseControlsEnabled(false)
+    _menuGarage:MouseEdgeEnabled(false)
+    _menuGarage:ControlDisablingEnabled(false)
+    _menuGarage:RefreshIndex()
+    
+    mainMenu:Visible(not mainMenu:Visible())
 end
 
 RegisterCommand("savecar", function()
