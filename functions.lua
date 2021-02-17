@@ -92,25 +92,24 @@ function CreateMenuGaragePublic()
         else
             table.insert(listCarMenu, 'Emty')
         end
-    end)
-    local listItemVehicle = NativeUI.CreateListItem("Car", listCarMenu, 1)
-    mainMenu.OnListSelect = function(sender, item, index)
-        if item == listItemVehicle then
-            local itemName = item:IndexToItem(index)
-            if itemName == 'Emty' and itemName ~= 'nil' then
-                notify(sx('car_emty'))
-            else
-                spawnVehicleCar(dataVehicleProps, index)
+        local listItemVehicle = NativeUI.CreateListItem("Car", listCarMenu, 1)
+        mainMenu.OnListSelect = function(sender, item, index)
+            if item == listItemVehicle then
+                local itemName = item:IndexToItem(index)
+                if itemName == 'Emty' and itemName ~= 'nil' then
+                    notify(sx('car_emty'))
+                else
+                    spawnVehicleCar(dataVehicleProps, index)
+                end
             end
         end
-    end
-    mainMenu:AddItem(listItemVehicle)
-    _menuGarage:MouseControlsEnabled(false)
-    _menuGarage:MouseEdgeEnabled(false)
-    _menuGarage:ControlDisablingEnabled(false)
-    _menuGarage:RefreshIndex()
-    
-    mainMenu:Visible(not mainMenu:Visible())
+        mainMenu:AddItem(listItemVehicle)
+        _menuGarage:MouseControlsEnabled(false)
+        _menuGarage:MouseEdgeEnabled(false)
+        _menuGarage:ControlDisablingEnabled(false)
+        _menuGarage:RefreshIndex()
+        mainMenu:Visible(not mainMenu:Visible())
+    end)
 end
 
 RegisterCommand("savecar", function()
