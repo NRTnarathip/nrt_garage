@@ -11,23 +11,25 @@ function openMenu(isOpen)
     end
 end
 function _tsl(str, ...)
-	if Locales[Config.Locale] ~= nil then
-		if Locales[Config.Locale][str] ~= nil then
-		  return string.format(Locales[Config.Locale][str], ...)
-		else
-		  return 'Translation [' .. Config.Locale .. '][' .. str .. '] does not exists'
-		end
-  	else
-    	return 'Locale [' .. Config.Locale .. '] does not exists'
-  	end
+    if Locales[Config.Locale] ~= nil then
+        if Locales[Config.Locale][str] ~= nil then
+            return string.format(Locales[Config.Locale][str], ...)
+        else
+            return 'Translation [' .. Config.Locale .. '][' .. str ..
+                       '] does not exists'
+        end
+    else
+        return 'Locale [' .. Config.Locale .. '] does not exists'
+    end
 end
 function sx(str, ...) -- Translate string first char uppercase
-  return tostring(_tsl(str, ...):gsub("^%l", string.upper))
+    return tostring(_tsl(str, ...):gsub("^%l", string.upper))
 end
 function deleteVehicleInTheWorld(vehicleProps)
     local vhTheWorld = ESX.Game.GetVehicles() -- Entity Vehicle
     for _, rowVehicleTheWorld in ipairs(vhTheWorld) do
-        local vehicleWorldProps = ESX.Game.GetVehicleProperties(rowVehicleTheWorld)
+        local vehicleWorldProps = ESX.Game.GetVehicleProperties(
+                                      rowVehicleTheWorld)
         for _i, rowVehicleGarageProps in ipairs(vehicleProps) do
             if vehicleWorldProps.plate == rowVehicleGarageProps.plate then
                 ESX.Game.DeleteVehicle(rowVehicleTheWorld)
@@ -40,15 +42,13 @@ function spawnVehicleCar(vehicleProps, i)
     local spc = Config.GaragePublic.SpawnCar
     -- check Obtacle location spawn
     for _, rowSpawnCoordsX in ipairs(spc.pos.x) do
-        local vec3Coords = vector3(spc.pos.x[_],spc.pos.y[_],spc.pos.z[_])
+        local vec3Coords = vector3(spc.pos.x[_], spc.pos.y[_], spc.pos.z[_])
         local objVehicle = ESX.Game.GetVehiclesInArea(vec3Coords, 6.0)
         local vhInArea = false
-        for _i,v in pairs(objVehicle) do
-            vhInArea = true
-        end
+        for _i, v in pairs(objVehicle) do vhInArea = true end
         if vhInArea == false then
-            ESX.Game.SpawnVehicle(vehicleProps[i].model, vec3Coords, spc.heading,
-            function(vehicleSpawn)
+            ESX.Game.SpawnVehicle(vehicleProps[i].model, vec3Coords,
+                                  spc.heading, function(vehicleSpawn)
                 ESX.Game.SetVehicleProperties(vehicleSpawn, vehicleProps[i])
             end)
             break
@@ -56,9 +56,7 @@ function spawnVehicleCar(vehicleProps, i)
     end
 end
 function TableIsEmty(tableArgs)
-	for _, v in ipairs(tableArgs) do
-    	return false
-    end
+    for _, v in ipairs(tableArgs) do return false end
     return true
 end
 
@@ -79,15 +77,16 @@ function CreateMenuGaragePublic()
     _menuGarage = NativeUI.CreatePool()
     mainMenu = NativeUI.CreateMenu("Garage Public", 'Garage Public Beta')
     _menuGarage:Add(mainMenu)
-    ESX.TriggerServerCallback('nrt_garage:getVehicleGarage', function(callback) 
-        for k,v in ipairs(callback) do 
-            table.insert(dataVehicleProps,v)
-        end
+    ESX.TriggerServerCallback('nrt_garage:getVehicleGarage', function(callback)
+        for k, v in ipairs(callback) do table.insert(dataVehicleProps, v) end
         if TableIsEmty(dataVehicleProps) == false then
             for _, rowVehicleProps in ipairs(dataVehicleProps) do
-                local name = GetLabelText(GetDisplayNameFromVehicleModel(rowVehicleProps.model))
+                local name = GetLabelText(
+                                 GetDisplayNameFromVehicleModel(
+                                     rowVehicleProps.model))
                 local plate = rowVehicleProps.plate
-                table.insert(listCarMenu, string.format("Name:%s plate:%s", name, plate))
+                table.insert(listCarMenu,
+                             string.format("Name:%s plate:%s", name, plate))
             end
         else
             table.insert(listCarMenu, 'Emty')
@@ -112,13 +111,11 @@ function CreateMenuGaragePublic()
     end)
 end
 
-RegisterCommand("savecar", function()
-    SaveCarAtGarage()
-end)
+RegisterCommand("savecar", function() SaveCarAtGarage() end)
 function SaveCarAtGarage()
     local vehicle = GetVehiclePedIsUsing(GetPlayerPed(-1))
     local vehicleProps = ESX.Game.GetVehicleProperties(vehicle)
-    SaveVehicleCar(vehicleProps,vehicle)
+    SaveVehicleCar(vehicleProps, vehicle)
 end
 
 function Draw3DText(x, y, z, scl_factor, text)
@@ -148,22 +145,24 @@ function notify(string)
     AddTextComponentString(string)
     DrawNotification(true, false)
 end
-function SaveVehicleCar(vehicleProps,vehicle)
-    local carName = GetLabelText(GetDisplayNameFromVehicleModel(vehicleProps.model))
-    ESX.TriggerServerCallback('nrt_garage:SaveCarVehicleGarage',function(cb)
+function SaveVehicleCar(vehicleProps, vehicle)
+    local carName = GetLabelText(GetDisplayNameFromVehicleModel(
+                                     vehicleProps.model))
+    ESX.TriggerServerCallback('nrt_garage:SaveCarVehicleGarage', function(cb)
         if cb == 'updateVehicle' or cb == 'createVehicle' then
             DeleteEntity(vehicle);
         elseif cb == 2 then
-        	notify(sx('cannot_save_vehicle_garage'))
+            notify(sx('cannot_save_vehicle_garage'))
         end
-    end, vehicleProps,vehicle,carName)
+    end, vehicleProps, vehicle, carName)
 end
 
 function DrawMarkerAll(v)
-    DrawMarker(v.tyeMarker, v.pos.x, v.pos.y, v.pos.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, v.scale.x,
-    v.scale.y, v.scale.z, v.color.r, v.color.g, v.color.b, v.color.a, false, true, 2, false, nil,
-    nil, false)
+    DrawMarker(v.tyeMarker, v.pos.x, v.pos.y, v.pos.z, 0.0, 0.0, 0.0, 0.0, 0.0,
+               0.0, v.scale.x, v.scale.y, v.scale.z, v.color.r, v.color.g,
+               v.color.b, v.color.a, false, true, 2, false, nil, nil, false)
 end
+
 function alert(msg)
     SetTextComponentFormat("STRING")
     AddTextComponentString(msg)
